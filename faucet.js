@@ -10,7 +10,7 @@ const util = require('util');
 const log_file = fs.createWriteStream(__dirname + '/debug.log', {flags : 'a'});
 const log_stdout = process.stdout;
 
-const faucetAddress = "firma1ej6f6wrazt62kxfehrjf2rqyd5z2gvaf2vd92x";
+const faucetAddress = "firma1s32kfj68jjgctfycc7y4pa9scul2ujsd8gq2ym";
 const faucetPassword = "vlfmak12#$";
 const denom = "firma";
 
@@ -18,7 +18,12 @@ async function faucet(address, amount) {
 	try {
         let result = child_process.spawnSync("firma-cli", ["tx", "send", faucetAddress, address, amount + denom ,"-y"], { input: faucetPassword + "\n" });
         try {
-            let resultParse = JSON.parse(result.stdout.toString('utf8'));
+            if(result.stderr != "") {
+	    	return JSON.stringify({
+		   "result": "failed"
+		});
+	    }
+	    let resultParse = JSON.parse(result.stdout.toString('utf8'));
             return JSON.stringify({
                 "result":  "success",
                 "tx":       resultParse.txhash 
@@ -63,6 +68,6 @@ const server = http.createServer( function(request, response) {
 })
 
 const port = 4555
-const host = 'localhost'
+const host = '0.0.0.0'
 server.listen(port, host)
 console.log("START", `Listening at http://${host}:${port}`)
