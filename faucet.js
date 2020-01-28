@@ -6,19 +6,22 @@ const child_process = require("child_process");
 const qs = require('querystring');
 const fs = require('fs');
 const util = require('util');
-
+const dotenv = require('dotenv')
 const log_file = fs.createWriteStream(__dirname + '/debug.log', {flags : 'a'});
 const log_stdout = process.stdout;
 
-const faucetAddress = "firma1s32kfj68jjgctfycc7y4pa9scul2ujsd8gq2ym";
-const faucetPassword = "vlfmak12#$";
-const denom = "firma";
+dotenv.config()
+const faucetAddress = process.env.FAUCET_ADDRESS;
+const faucetPassword = process.env.FAUCET_PASSWORD;
+const limit_amount = process.env.FAUCET_LIMIT_AMOUNT;
+const denom = process.env.FAUCET_DENOM;
 
 async function faucet(address, amount) {
 	try {
         let result = child_process.spawnSync("firma-cli", ["tx", "send", faucetAddress, address, amount + denom ,"-y"], { input: faucetPassword + "\n" });
         try {
-            if(result.stderr != "") {
+            if(result.stderr != "" || amount > limit_amount) {
+		console.log(result.stderr);
 	    	return JSON.stringify({
 		   "result": "failed"
 		});
@@ -37,10 +40,6 @@ async function faucet(address, amount) {
 		console.log("CRITICAL", e);
 		return false;
 	}
-}
-
-function sleep(ms) {
-	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 console.log = function(type, d) {
@@ -67,7 +66,7 @@ const server = http.createServer( function(request, response) {
 	}
 })
 
-const port = 4555
-const host = '0.0.0.0'
+const port = process.env.PORT
+const host = process.env.HOST
 server.listen(port, host)
 console.log("START", `Listening at http://${host}:${port}`)
