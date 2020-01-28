@@ -35,7 +35,8 @@ async function faucet(address, amount) {
 	    let resultParse = JSON.parse(result.stdout.toString('utf8'));
             return JSON.stringify({
                 "result":  "success",
-                "tx":       resultParse.txhash 
+                "tx":       resultParse.txhash,
+		"respData": resultParse,
             });
         }
         catch (e) {
