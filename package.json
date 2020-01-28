@@ -1,0 +1,23 @@
+{
+  "name": "firmachain-faucet",
+  "version": "1.0.0",
+  "description": "## SETUP cp env.default .env vim .env pm2 start faucet.js",
+  "main": "faucet.js",
+  "dependencies": {
+    "dotenv": "^8.2.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FirmaChain/FirmaChain-Faucet.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/FirmaChain/FirmaChain-Faucet/issues"
+  },
+  "homepage": "https://github.com/FirmaChain/FirmaChain-Faucet#readme"
+}
