@@ -29,7 +29,7 @@ async function faucet(address, amount) {
             if(result.stderr != "") {
 	    	return JSON.stringify({
 		   "result": "failed",
-		   "error": result.stderr
+		   "error": result.stderr.toString('utf8')
 		});
 	    }
 	    let resultParse = JSON.parse(result.stdout.toString('utf8'));
