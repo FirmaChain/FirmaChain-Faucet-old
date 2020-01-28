@@ -20,10 +20,16 @@ async function faucet(address, amount) {
 	try {
         let result = child_process.spawnSync("firma-cli", ["tx", "send", faucetAddress, address, amount + denom ,"-y"], { input: faucetPassword + "\n" });
         try {
-            if(result.stderr != "" || amount > limit_amount) {
-		console.log(result.stderr);
+	    if(amount > limit_amount){
 	    	return JSON.stringify({
-		   "result": "failed"
+                   "result": "failed",
+                   "error": "amount limited"
+                });
+	    }
+            if(result.stderr != "") {
+	    	return JSON.stringify({
+		   "result": "failed",
+		   "error": result.stderr
 		});
 	    }
 	    let resultParse = JSON.parse(result.stdout.toString('utf8'));
