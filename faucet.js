@@ -17,31 +17,32 @@ const limit_amount = process.env.FAUCET_LIMIT_AMOUNT;
 const denom = process.env.FAUCET_DENOM;
 
 async function faucet(address, amount) {
-	try {
-        let result = child_process.spawnSync("firma-cli", ["tx", "send", faucetAddress, address, amount + denom ,"-y"], { input: faucetPassword + "\n" });
-        try {
-	    if(amount > limit_amount){
-	    	return JSON.stringify({
-                   "result": "failed",
-                   "error": "amount limited"
-                });
-	    }
-            if(result.stderr != "") {
-	    	return JSON.stringify({
+	if(amount > limit_amount){
+		return JSON.stringify({
 		   "result": "failed",
-		   "error": result.stderr.toString('utf8')
+		   "error": "amount limited"
 		});
-	    }
-	    let resultParse = JSON.parse(result.stdout.toString('utf8'));
-            return JSON.stringify({
-                "result":  "success",
-                "tx":       resultParse.txhash,
-		"respData": resultParse,
-            });
-        }
-        catch (e) {
-            return e;
-        }
+	}
+	amount = Math.trunc(amount * ( 10 ** 6 ));
+	try {
+        	let result = child_process.spawnSync("firma-cli", ["tx", "send", faucetAddress, address, amount + denom ,"-y"], { input: faucetPassword + "\n" });
+		try {
+		    if(result.stderr != "") {
+			return JSON.stringify({
+			   "result": "failed",
+			   "error": result.stderr.toString('utf8')
+			});
+		    }
+		    let resultParse = JSON.parse(result.stdout.toString('utf8'));
+		    return JSON.stringify({
+			"result":  "success",
+			"tx":       resultParse.txhash,
+			"respData": resultParse,
+		    });
+		}
+		catch (e) {
+		    return e;
+		}
 	}
 	catch (e){
 		console.log("CRITICAL", e);
