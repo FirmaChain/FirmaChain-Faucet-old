@@ -14,7 +14,10 @@ dotenv.config()
 const faucetAddress = process.env.FAUCET_ADDRESS;
 const faucetPassword = process.env.FAUCET_PASSWORD;
 const limit_amount = process.env.FAUCET_LIMIT_AMOUNT;
-const denom = process.env.FAUCET_DENOM;
+const denom = process.env.FAUCET_DENOM || 'ufirma';
+const gas = process.env.GAS || 'auto';
+const gasAdj = process.env.GAS_ADJ || 2;
+const gasPrice = process.env.GAS_PRICE || 0.01;
 
 async function faucet(address, amount) {
 	if(amount > limit_amount){
@@ -25,7 +28,18 @@ async function faucet(address, amount) {
 	}
 	amount = Math.trunc(amount * ( 10 ** 6 ));
 	try {
-        	let result = child_process.spawnSync("firma-cli", ["tx", "send", faucetAddress, address, amount + denom ,"-y"], { input: faucetPassword + "\n" });
+		const params = [
+			"tx",
+			"send", 
+			faucetAddress, 
+			address, 
+			amount + denom, 
+			"--gas=" + gas, 
+			"--gas-adjustment=" + gasAdj, 
+			"--gas-prices=" + gasPrice + denom
+		];
+		
+        	let result = child_process.spawnSync("firma-cli", [...params, "-y"], { input: faucetPassword + "\n" });
 		try {
 		    if(result.stderr != "") {
 			return JSON.stringify({
